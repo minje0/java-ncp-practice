@@ -1,0 +1,17 @@
+* {
+    text-align: center;
+}
+
+ul {
+    list-style-position: inside;
+    padding-left: 0;
+    text-align: center;
+}
+
+li {
+    display: block;
+}
+
+a {
+    color: green;
+}

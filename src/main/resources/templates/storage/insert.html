@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>오브젝트 스토리지</h1>
+    <form action="/storage/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="insertFile" id="fileInput">
+        <input type="submit" value="업로드">
+    </form>
+<script>
+    // 파일 크기를 알아내는 함수
+    function getFileSize() {
+        // input 요소 가져오기
+        var fileInput = document.getElementById('fileInput');
+
+        // 선택한 파일 가져오기
+        var file = fileInput.files[0];
+
+        // 파일 크기 가져오기 (단위: 바이트)
+        var fileSize = file.size;
+
+        var mbSize = fileSize / (1024 * 1024);
+
+        // 파일 크기 출력 (예시로 콘솔에 출력)
+        console.log("File size: " + mbSize + " MB");
+
+        if (mbSize >= 128) {
+            alert("파일 크기가 큽니다. 128MB 이하의 파일을 선택해주세요.");
+            fileInput.value = ''; // 파일 선택 값을 비워줍니다.
+        }
+    }
+
+    // 파일 선택 시 getFileSize 함수 호출
+    document.getElementById('fileInput').addEventListener('change', getFileSize);
+</script>
+</body>
+</html>

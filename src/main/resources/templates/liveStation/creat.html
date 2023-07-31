@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/basic.css">
+</head>
+<body>
+  <h1>생성 완료</h1>
+    <div style="display: flex">
+        <h3>url</h3>
+        <div th:text="${url}"></div>
+
+        <h3>key</h3>
+        <div th:text="${stampKey}"></div>
+
+        <h3>cdnInstanceNo</h3>
+        <div th:text="${cdnInstanceNo}"></div>
+    </div>
+
+    <form action="/liveStation/getCdn" method="post">
+        <input th:value="${cdnInstanceNo}" name="cdnInstanceNo">
+        <input type="submit" value="cdn정보확인">
+    </form>
+
+
+  <h2>시청하는 곳</h2>
+    <form action="/liveStation/showLive" method="post">
+        <input type="text" th:value="${id}" name="channelID">
+        <input type="submit" value="라이브">
+    </form>
+</body>
+</html>

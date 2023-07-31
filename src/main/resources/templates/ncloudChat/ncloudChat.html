@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="module" src="https://unpkg.com/ncloudchat@1.0.43/ncloudchat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"></script>
+</head>
+<body>
+<h1>NCloud Chat</h1>
+<input id="channel_name" type="text">
+<button id="creat_btn">채널 생성</button>
+<button id="add-btn">채널 참여</button>
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+
+        const nc = new ncloudchat.Chat();
+
+        async function connectToChat() {
+            //project 접속
+            nc.initialize('ea3a8bf5-e78c-4f9b-830d-e66bf1d4040b');
+
+            //사용자 접속
+            await nc.connect({
+                id: '522244b0-9bfb-4507-a310-270d89f11c1a',
+                name: 'Admin',
+            });
+        }
+
+        // async 함수를 호출하여 비동기 작업 실행
+        connectToChat();
+
+    //채널 만들기
+    async function createChannel() {
+        const name = document.getElementById("channel_name").value;
+        await nc.createChannel({ type: "PRIVATE", name: name });
+    }
+
+    document.getElementById("creat_btn").addEventListener('click', createChannel);
+
+
+    // async function createChannel() {
+    //     const name = document.getElementById("channel_name").value;
+    //     await nc.subscribe([CHANNEL_ID]);
+    // }
+
+
+
+});
+</script>
+
+</body>
+</html>
