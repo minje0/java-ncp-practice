@@ -1,5 +1,7 @@
 package com.example.finalexamplespring.ncloudChatApi.service;
 
+import com.example.finalexamplespring.dto.ResponseDTO;
+import com.example.finalexamplespring.liveStation.responseDto.LiveInfoDTO;
 import com.example.finalexamplespring.ncloudChatApi.dto.ChatUserDTO;
 import com.example.finalexamplespring.ncloudChatApi.dto.MemberResponseDTO;
 import com.example.finalexamplespring.user.dto.UserDTO;
@@ -21,35 +23,46 @@ public class ChatApiService {
     String API_KEY;
     String BASE_URL = "https://dashboard-api.ncloudchat.naverncp.com/v1/api";
 
-    public ResponseEntity<MemberResponseDTO> joinUser(UserDTO userDTO) throws Exception {
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(BASE_URL);
-        urlBuilder.append("/members");
+    public ResponseEntity<?> join(User user) {
+        ResponseDTO<MemberResponseDTO> responseDTO = new ResponseDTO<>();
+        try {
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.append(BASE_URL);
+            urlBuilder.append("/members");
 
-        String url = urlBuilder.toString();
+            String url = urlBuilder.toString();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("accept", "application/json");
-        headers.set("x-project-id", PROJECT_ID);
-        headers.set("x-api-key", API_KEY);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("accept", "application/json");
+            headers.set("x-project-id", PROJECT_ID);
+            headers.set("x-api-key", API_KEY);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ChatUserDTO chatUserDTO = ChatUserDTO.builder()
-                .userId(userDTO.getEmail())
-                .name(userDTO.getName())
-                .build();
+            ChatUserDTO chatUserDTO = ChatUserDTO.builder()
+                    .userId(user.getEmail())
+                    .name(user.getName())
+                    .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(chatUserDTO);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonBody = objectMapper.writeValueAsString(chatUserDTO);
 
-        HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
+            HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-        ResponseEntity<MemberResponseDTO> responseEntity = restTemplate.exchange(new URI(url), HttpMethod.POST, body, MemberResponseDTO.class);
+            ResponseEntity<MemberResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.POST, body, MemberResponseDTO.class);
 
-        return responseEntity;
+            responseDTO.setItem(response.getBody());
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
     }
 
     public ResponseEntity<MemberResponseDTO> deleteUser(User user) throws Exception {
