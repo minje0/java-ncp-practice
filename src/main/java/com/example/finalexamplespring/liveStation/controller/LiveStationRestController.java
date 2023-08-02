@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/live")
 @RequiredArgsConstructor
 @RestController
-public class LiveStationController {
+public class LiveStationRestController {
     private final LiveStationService liveStationService;
 
     @ApiOperation(

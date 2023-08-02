@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,7 +41,8 @@ public class ChatController {
     @SendTo("/topic/public/{roomId}")
     public String sendMessage(@Payload String chatMessage,
                               @DestinationVariable String roomId) throws IOException {
-
+        System.out.println("-------실행?----------");
+        System.out.println("사용자가 보낸 메시지: " + chatMessage);
         URL url = new URL(apiUrl);
 
         String message =  getReqMessage(chatMessage);

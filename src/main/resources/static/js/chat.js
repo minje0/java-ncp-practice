@@ -21,6 +21,7 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe(`/topic/public/${roomId}`, function (message) {
+            console.log("확인용: " + message + "끝");
             showMessage("챗봇: " + message.body); // 서버로부터 받은 메시지를 출력
         });
     });
@@ -37,7 +38,7 @@ function disconnect() {
 function sendMessage() {
     let message = $("#msg").val()
     showMessage("보낸 메시지: " + message);
-
+    console.log("확인용: " + message + "끝");
     stompClient.send(`/app/sendMessage/${roomId}`, {}, JSON.stringify(message)); //서버에 보낼 메시지
     $("#msg").val('');
 }

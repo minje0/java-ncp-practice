@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/storage")
 @RequiredArgsConstructor
 @RestController
-public class ApiObjectStorageController {
+public class ObjectStorageRestController {
     private final ObjectStorageService storageService;
 
     @GetMapping("/download/{objectName}")

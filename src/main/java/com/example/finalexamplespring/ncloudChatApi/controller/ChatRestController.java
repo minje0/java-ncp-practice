@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ncloudChatApi")
 @RequiredArgsConstructor
 @RestController
-public class ChatApiController {
+public class ChatRestController {
     private final ChatApiService chatApiService;
 
     @GetMapping("/delete")

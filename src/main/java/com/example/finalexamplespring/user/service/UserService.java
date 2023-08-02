@@ -24,18 +24,14 @@ public class UserService {
             throw new RuntimeException("already exist id");
         }
 
-        return userRepository.save(user);
-    }
-
-    public  UserDTO loadUserByEmail(String userEmail) {
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);
-
-        if (userOptional.isEmpty()) {
-            return null;
+        switch (user.getRole()) {
+            case "학생": user.setRole("ROLE_STUDENT");break;
+            case "학부모": user.setRole("ROLE_PARENT");break;
+            case "선생": user.setRole("ROLE_TEACHER");break;
+            default: user.setRole("ROLE_USER");
         }
 
-        return userOptional.get().EntityToDTO();
-
+        return userRepository.save(user);
     }
 
     public User login(String email, String password) {

@@ -1,6 +1,7 @@
 package com.example.finalexamplespring.jwt;
 
 import com.example.finalexamplespring.user.dto.UserDTO;
+import com.example.finalexamplespring.user.service.UserDetailsService;
 import com.example.finalexamplespring.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,7 +27,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
 
     //filter로 등록하면 자동으로 실행될 메소드
@@ -42,12 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //유효성 검사 및 email 가져오기
                 String userEmail = jwtTokenProvider.validateAndGetEmail(token);
 
-                UserDTO userDTO =
-                        userService.loadUserByEmail(userEmail);
+                UserDetails userDetails =
+                        userDetailsService.loadUserByEmail(userEmail);
 
                 //유효성 검사 완료된 토큰 시큐리티에 인증된 사용자로 등록
                 AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDTO, null
+                        userDetails, null
                 );
 
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

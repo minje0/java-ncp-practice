@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cdn")
 @RequiredArgsConstructor
 @RestController
-public class CdnController {
+public class CdnRestController {
     private final CdnService cdnService;
 
     @ApiOperation(

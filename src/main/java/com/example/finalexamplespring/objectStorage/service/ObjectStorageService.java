@@ -4,6 +4,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import com.example.finalexamplespring.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -21,8 +22,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ObjectStorageService {
     private final AmazonS3 s3;
-
-
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucket;
 
@@ -79,12 +78,4 @@ public class ObjectStorageService {
         }
         return uniqueFilename;
     }
-
-//    public AmazonS3 getClient() {
-//        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endPoint, region))
-//                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
-//                .build();
-//        return s3;
-//    }
 }

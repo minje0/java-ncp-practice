@@ -5,12 +5,14 @@ import com.example.finalexamplespring.user.dto.UserDTO;
 import com.example.finalexamplespring.user.entity.User;
 import com.example.finalexamplespring.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class UserController {
     private final UserService userService;
     private final ChatApiService chatApiService;
@@ -21,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(UserDTO userDTO) throws Exception {
+    public String signup(UserDTO userDTO) {
         User joinUser = userDTO.DTOToEntity();
         userService.join(joinUser);
         chatApiService.join(joinUser);

@@ -44,14 +44,16 @@ public class SecurityConfiguration {
                 })
                 //요청 주소에 대한 권한 설정
                 .authorizeHttpRequests((authorizeRequests) -> {
-                    authorizeRequests.requestMatchers("/").permitAll();
-                    authorizeRequests.requestMatchers("/css/**").permitAll();
-                    authorizeRequests.requestMatchers("/js/**").permitAll();
+//                    authorizeRequests.requestMatchers("/").permitAll();
+//                    authorizeRequests.requestMatchers("/css/**").permitAll();
+//                    authorizeRequests.requestMatchers("/js/**").permitAll();
                     authorizeRequests.requestMatchers("/ws/**").permitAll();
-                    authorizeRequests.requestMatchers("/chatBot/**").permitAll();
-                    authorizeRequests.anyRequest().authenticated();
+//                    authorizeRequests.requestMatchers("/chatBot/**").permitAll();
+//                    authorizeRequests.requestMatchers("/storage/**").permitAll();
+//                    authorizeRequests.requestMatchers("/vod/**").permitAll();
+                    authorizeRequests.anyRequest().permitAll();
                 })
-                .addFilterAfter(jwtAuthenticationFilter, CorsFilter.class)
+//                .addFilterAfter(jwtAuthenticationFilter, CorsFilter.class)
                 .build();
     }
 }
