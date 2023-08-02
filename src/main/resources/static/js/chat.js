@@ -1,14 +1,6 @@
 var stompClient = null;
 const roomId = Math.random().toString();
-console.log(roomId);
 
-function getIpAddress() {
-    return new Promise(function(resolve, reject) {
-        $.getJSON('https://jsonip.com?format=json', function (data) {
-            resolve(data.ip);
-        });
-    });
-}
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
@@ -20,8 +12,6 @@ function setConnected(connected) {
         $("#conversation").hide();
     }
     $("#msg").html("");
-
-    ipAddress = getIpAddress();
 }
 
 function connect() {

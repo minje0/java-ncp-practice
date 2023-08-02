@@ -1,6 +1,9 @@
 package com.example.finalexamplespring.liveStation.service;
 
+import com.example.finalexamplespring.dto.ResponseDTO;
 import com.example.finalexamplespring.liveStation.dto.*;
+import com.example.finalexamplespring.liveStation.responseDto.LiveInfoDTO;
+import com.example.finalexamplespring.liveStation.responseDto.LiveUrlDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -13,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class LiveStationService {
     String liveStationUrl = "https://livestation.apigw.ntruss.com/api/v2/channels";
 
     public ResponseEntity<?> createChannel(String name) {
+        ResponseDTO<LiveInfoDTO> responseDTO = new ResponseDTO<>();
         try {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append(liveStationUrl);
@@ -47,7 +53,7 @@ public class LiveStationService {
             LiveStationRequestDTO requestDTO = LiveStationRequestDTO.builder()
                     .channelName(name)
                     .cdn(cdnDTO)
-                    .qualitySetId(1)
+                    .qualitySetId(3)
                     .useDvr(true)
                     .immediateOnAir(true)
                     .timemachineMin(360)
@@ -55,38 +61,48 @@ public class LiveStationService {
                     .isStreamFailOver(false)
                     .build();
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonBody = objectMapper.writeValueAsString(requestDTO);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonBody = objectMapper.writeValueAsString(requestDTO);
 
-                String timestamp = String.valueOf(System.currentTimeMillis());
-                String method = "POST";
-                String sig = makeSignature(timestamp, method, signUrl);
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String method = "POST";
+            String sig = makeSignature(timestamp, method, signUrl);
 
-                //요청 헤더 만들기
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("x-ncp-apigw-timestamp", timestamp);
-                headers.set("x-ncp-iam-access-key", accessKey);
-                headers.set("x-ncp-apigw-signature-v2", sig);
-                headers.set("x-ncp-region_code", "KR");
+            //요청 헤더 만들기
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-ncp-apigw-timestamp", timestamp);
+            headers.set("x-ncp-iam-access-key", accessKey);
+            headers.set("x-ncp-apigw-signature-v2", sig);
+            headers.set("x-ncp-region_code", "KR");
 
-                HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
+            HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
 
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-                ResponseEntity<LiveStationResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.POST, body, LiveStationResponseDTO.class);
+            ResponseEntity<LiveStationResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.POST, body, LiveStationResponseDTO.class);
 
-                System.out.println("createChannel: " + response);
+            //보내줄 데이터 가공
+            LiveInfoDTO dto = LiveInfoDTO.builder()
+                    .channelId(response.getBody().getContent().getChannelId())
+                    .channelName(name)
+                    .build();
 
-                return response;
+            responseDTO.setItem(dto);
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred during file deletion: " + e.getMessage());
-        }
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
 
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
     }
 
     public ResponseEntity<?> getChannelInfo(String channelID) {
+        ResponseDTO<LiveInfoDTO> responseDTO = new ResponseDTO<>();
         try {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append(liveStationUrl);
@@ -112,16 +128,31 @@ public class LiveStationService {
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<LiveStationResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.GET, httpEntity, LiveStationResponseDTO.class);
 
-            System.out.println("getChannelInfo: " + response);
+            //보내줄 데이터 가공
+            LiveInfoDTO dto = LiveInfoDTO.builder()
+                    .channelId(channelID)
+                    .channelName(response.getBody().getContent().getChannelName())
+                    .cdnInstanceNo(response.getBody().getContent().getCdn().getInstanceNo())
+                    .cdnStatus(response.getBody().getContent().getCdn().getStatusName())
+                    .publishUrl(response.getBody().getContent().getPublishUrl())
+                    .streamKey(response.getBody().getContent().getStreamKey())
+                    .build();
 
-            return response;
+            responseDTO.setItem(dto);
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred during file deletion: " + e.getMessage());
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+            return ResponseEntity.badRequest().body(responseDTO);
         }
 
     }
 
     public ResponseEntity<?> getServiceURL(String channelID) {
+        ResponseDTO<LiveUrlDTO> responseDTO = new ResponseDTO<>();
         try {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append(liveStationUrl);
@@ -150,15 +181,33 @@ public class LiveStationService {
 
             ResponseEntity<ServiceUrlDTO> response = restTemplate.exchange(new URI(url), HttpMethod.GET, httpEntity, ServiceUrlDTO.class);
 
-            System.out.println("getServiceURL: " + response);
+            //보내줄 데이터 가공
 
-            return response;
+            List<LiveUrlDTO> dtoList = new ArrayList<>();
+
+            for (ContentDTO contentDTO : response.getBody().getContents()) {
+                LiveUrlDTO dto = LiveUrlDTO.builder()
+                        .channelId(channelID)
+                        .name(contentDTO.getName())
+                        .url(contentDTO.getUrl())
+                        .build();
+                dtoList.add(dto);
+            }
+
+            responseDTO.setItems(dtoList);
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred during file deletion: " + e.getMessage());
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+            return ResponseEntity.badRequest().body(responseDTO);
         }
     }
 
     public ResponseEntity<?> deleteChannel(String channelID) {
+        ResponseDTO<LiveInfoDTO> responseDTO = new ResponseDTO<>();
         try {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append(liveStationUrl);
@@ -186,11 +235,21 @@ public class LiveStationService {
 
             ResponseEntity<LiveStationResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.DELETE, httpEntity, LiveStationResponseDTO.class);
 
-            System.out.println("deleteChannel: " + response);
+            LiveInfoDTO dto = LiveInfoDTO.builder()
+                    .channelId(channelID)
+                    .channelName(response.getBody().getContent().getChannelName())
+                    .cdnInstanceNo(response.getBody().getContent().getCdn().getInstanceNo())
+                    .build();
 
-            return response;
+            responseDTO.setItem(dto);
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error occurred during file deletion: " + e.getMessage());
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+            return ResponseEntity.badRequest().body(responseDTO);
         }
     }
 

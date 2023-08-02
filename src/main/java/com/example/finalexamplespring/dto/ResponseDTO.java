@@ -1,4 +1,4 @@
-package com.example.finalexamplespring.user.dto;
+package com.example.finalexamplespring.dto;
 
 import lombok.Data;
 
@@ -10,5 +10,4 @@ public class ResponseDTO<T> {
     private T item;
     private String errorMessage;
     private int statusCode;
-
 }

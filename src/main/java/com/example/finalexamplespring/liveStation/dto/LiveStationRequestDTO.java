@@ -18,22 +18,22 @@ public class LiveStationRequestDTO {
      CdnDTO cdn;
 
      @JsonProperty("qualitySetId")
-     Integer qualitySetId;
+     int qualitySetId;
 
      @JsonProperty("useDvr")
-     Boolean useDvr;
+     boolean useDvr;
 
      @JsonProperty("immediateOnAir")
-     Boolean immediateOnAir;
+     boolean immediateOnAir;
 
      @JsonProperty("timemachineMin")
-     Integer timemachineMin;
+     int timemachineMin;
 
      @JsonProperty("record")
      RecordDTO record;
 
      @JsonProperty("isStreamFailOver")
-     Boolean isStreamFailOver;
+     boolean isStreamFailOver;
 
 }
 

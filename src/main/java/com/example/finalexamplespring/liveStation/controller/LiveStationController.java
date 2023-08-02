@@ -34,7 +34,7 @@ public class LiveStationController {
             value = "{channelId} 조회할 채널 ID, ",
             notes = "채널 아이디를 통해 url 정보를 확인한다."
     )
-    @GetMapping("/service/{channelId}")
+    @GetMapping("/infoUrl/{channelId}")
     public ResponseEntity<?> infoServiceUrl(@PathVariable String channelId) {
         return liveStationService.getServiceURL(channelId);
     }
