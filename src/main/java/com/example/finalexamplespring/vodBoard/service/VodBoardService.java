@@ -26,7 +26,7 @@ public class VodBoardService {
         for (VodBoardFile boardFile : fileList) {
             boardFile.setVodBoard(board);
 
-            int boardFilNo = vodBoardFileRepository.findMaxFileNo(board.getId());
+            int boardFilNo = vodBoardFileRepository.save(boardFile).getVodFileNo();
             boardFile.setVodFileNo(boardFilNo);
 
             vodBoardFileRepository.save(boardFile);

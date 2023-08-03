@@ -25,10 +25,13 @@ public class ObjectStorageService {
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucket;
 
+    @Value("${cloud.aws.s3.file.bucket.name}")
+    private String fileBucket;
+
 
     public ResponseEntity<?> getObject(String objectName) {
         try {
-            S3Object o = s3.getObject(new GetObjectRequest(bucket, objectName));
+            S3Object o = s3.getObject(new GetObjectRequest(fileBucket, objectName));
             S3ObjectInputStream objectInputStream = ((S3Object) o).getObjectContent();
             byte[] bytes = IOUtils.toByteArray(objectInputStream);
 
@@ -49,8 +52,8 @@ public class ObjectStorageService {
 
     public ResponseEntity<?> deleteObject(String objectName) {
         try {
-            s3.deleteObject(bucket, objectName);
-            String message = "Object " + objectName + " has been deleted from " + bucket + ".";
+            s3.deleteObject(fileBucket, objectName);
+            String message = "Object " + objectName + " has been deleted from " + fileBucket + ".";
             return ResponseEntity.ok(message);
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
@@ -71,7 +74,7 @@ public class ObjectStorageService {
 
         PutObjectRequest putObjectRequest = null;
         try {
-            putObjectRequest = new PutObjectRequest(bucket, uniqueFilename, multipartFile.getInputStream(), objectMetadata);
+            putObjectRequest = new PutObjectRequest(fileBucket, uniqueFilename, multipartFile.getInputStream(), objectMetadata);
             s3.putObject(putObjectRequest);
         } catch (IOException e) {
             throw new RuntimeException(e);

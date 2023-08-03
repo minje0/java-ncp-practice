@@ -28,6 +28,9 @@ public class VodBoard {
     @Column(name = "VOD_CONTENT")
     private String content;
 
+    @Column(name = "VOD_WRITER")
+    private String writer;
+
     @Column(name = "VOD_REG")
     private LocalDateTime regDate;
 
@@ -40,19 +43,16 @@ public class VodBoard {
     @Column(name = "VOD_PATH")
     private String path;
 
-    @ManyToOne
-    private User user;
-
     public VodBoardDTO EntityToDTO() {
         VodBoardDTO vodBoardDTO = VodBoardDTO.builder()
                 .id(this.id)
                 .title(this.title)
                 .content(this.content)
+                .writer(this.writer)
                 .regDate(this.regDate)
                 .modDate(this.modDate)
                 .hits(this.hits)
                 .path(this.path)
-                .userDTO(this.user.EntityToDTO())
                 .build();
         return vodBoardDTO;
     }

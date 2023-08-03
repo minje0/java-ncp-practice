@@ -22,8 +22,8 @@ public class VodBoardFile {
     private String vodOriginName;
     @Column(name = "VOD_SAVE_NAME")
     private String vodSaveName;
-    @Column(name = "VOD_FILE_PATH")
-    private String vodFilePath;
+    @Column(name = "VOD_FILE_OBJECT")
+    private String vodFileObject;
     @ManyToOne
     @JoinColumn(name = "VOD_NO")
     private VodBoard vodBoard;
@@ -33,7 +33,7 @@ public class VodBoardFile {
                 .vodFileNo(this.vodFileNo)
                 .vodOriginName(this.vodOriginName)
                 .vodSaveName(this.vodSaveName)
-                .vodFilePath(this.vodFilePath)
+                .vodFileObject(this.vodFileObject)
                 .build();
         return vodBoardFileDTO;
     }

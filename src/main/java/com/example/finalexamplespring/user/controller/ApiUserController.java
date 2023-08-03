@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -25,9 +22,9 @@ public class ApiUserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestParam UserDTO userDTO) {
+    public ResponseEntity<?> join(@RequestBody UserDTO userDTO) {
         ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>();
-
+        System.out.println(userDTO);
         try {
             User user = userDTO.DTOToEntity();
 
@@ -55,8 +52,9 @@ public class ApiUserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam UserDTO userDTO) {
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
         ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>();
+        System.out.println(userDTO);
 
         try {
             User user = userService.login(userDTO.getEmail(), userDTO.getPassword());

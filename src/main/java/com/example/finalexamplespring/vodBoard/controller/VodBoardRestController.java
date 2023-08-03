@@ -31,7 +31,7 @@ public class VodBoardRestController {
     private final ObjectStorageService objectStorageService;
 
 
-    @GetMapping("/boardList")
+    @GetMapping("/board-list")
     public ResponseEntity<?> getBoardList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ResponseDTO<VodBoardDTO> responseDTO = new ResponseDTO<>();
@@ -58,8 +58,7 @@ public class VodBoardRestController {
 
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> insertBoard(VodBoardDTO boardDTO,
-                                         MultipartHttpServletRequest fileRequest) {
-
+                                         MultipartHttpServletRequest mphsRequest) {
         System.out.println("되긴하니?");
         ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 
@@ -69,14 +68,14 @@ public class VodBoardRestController {
             VodBoard board = VodBoard.builder()
                     .title(boardDTO.getTitle())
                     .content(boardDTO.getContent())
-                    .user(boardDTO.getUserDTO().DTOToEntity())
+                    .writer(boardDTO.getWriter())
                     .regDate(LocalDateTime.now())
                     .build();
 
-            Iterator<String> iterator = fileRequest.getFileNames();
+            Iterator<String> iterator = mphsRequest.getFileNames();
 
             while (iterator.hasNext()) {
-                List<MultipartFile> fileList = fileRequest.getFiles(iterator.next());
+                List<MultipartFile> fileList = mphsRequest.getFiles(iterator.next());
 
                 for (MultipartFile file : fileList) {
                     if (!file.isEmpty()) {
