@@ -13,7 +13,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         //모든 요청에 대한 예외 등록
         registry.addMapping("/**")
                 //예외로 동작할 주소 지정
-                .allowedOrigins("http://192.168.0.3:3000")
+                .allowedOrigins("http://192.168.0.2:3000")
                 .allowedOrigins("http://localhost:3001")
                 //허용될 요청방식
                 .allowedMethods("*")

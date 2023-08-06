@@ -1,10 +1,13 @@
 package com.example.finalexamplespring.chatBot;
 
+import com.example.finalexamplespring.dto.ResponseDTO;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -41,15 +44,14 @@ public class ChatController {
     @SendTo("/topic/public/{roomId}")
     public String sendMessage(@Payload String chatMessage,
                               @DestinationVariable String roomId) throws IOException {
-        System.out.println("-------실행?----------");
         System.out.println("사용자가 보낸 메시지: " + chatMessage);
         URL url = new URL(apiUrl);
 
-        String message =  getReqMessage(chatMessage);
+        String message = getReqMessage(chatMessage);
         String encodeBase64String = makeSignature(message, secretKey);
 
         //api서버 접속 (서버 -> 서버 통신)
-        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json;UTF-8");
         con.setRequestProperty("X-NCP-CHATBOT_SIGNATURE", encodeBase64String);
@@ -64,7 +66,7 @@ public class ChatController {
 
         BufferedReader br;
 
-        if(responseCode==200) { // 정상 호출
+        if (responseCode == 200) { // 정상 호출
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
@@ -78,23 +80,23 @@ public class ChatController {
             //받아온 값을 세팅하는 부분
             JSONParser jsonparser = new JSONParser();
             try {
-                JSONObject json = (JSONObject)jsonparser.parse(jsonString);
-                JSONArray bubblesArray = (JSONArray)json.get("bubbles");
-                JSONObject bubbles = (JSONObject)bubblesArray.get(0);
-                JSONObject data = (JSONObject)bubbles.get("data");
+                JSONObject json = (JSONObject) jsonparser.parse(jsonString);
+                JSONArray bubblesArray = (JSONArray) json.get("bubbles");
+                JSONObject bubbles = (JSONObject) bubblesArray.get(0);
+                JSONObject data = (JSONObject) bubbles.get("data");
                 String description = "";
-                description = (String)data.get("description");
+                description = (String) data.get("description");
                 chatMessage = description;
+
             } catch (Exception e) {
-                System.out.println("error");
-                e.printStackTrace();
+                System.out.println("error: " + e.getStackTrace());
             }
 
             in.close();
         } else {  // 에러 발생
-            chatMessage = con.getResponseMessage();
+            chatMessage = "error";
         }
-        System.out.println("chatMessage: " + chatMessage);
+        System.out.println("ChatBot 메시지: " + chatMessage);
         return chatMessage;
     }
 

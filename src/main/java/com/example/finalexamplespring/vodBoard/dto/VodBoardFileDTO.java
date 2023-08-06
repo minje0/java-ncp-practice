@@ -10,16 +10,14 @@ public class VodBoardFileDTO {
     private int vodFileNo;
     private String vodOriginName;
     private String vodSaveName;
-    private String vodFileObject;
-    private VodBoardDTO vodBoardDTO;
+    private int vodBoardNo;
 
     public VodBoardFile DTOTOEntity() {
         VodBoardFile vodBoardFile = VodBoardFile.builder()
-                .vodBoard(this.vodBoardDTO.DTOTOEntity())
                 .vodFileNo(this.vodFileNo)
                 .vodOriginName(this.vodOriginName)
                 .vodSaveName(this.vodSaveName)
-                .vodFileObject(this.vodFileObject)
+                .vodBoardNo(this.vodBoardNo)
                 .build();
         return vodBoardFile;
     }

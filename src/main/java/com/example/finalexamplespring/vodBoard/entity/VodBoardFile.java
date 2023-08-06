@@ -24,16 +24,14 @@ public class VodBoardFile {
     private String vodSaveName;
     @Column(name = "VOD_FILE_OBJECT")
     private String vodFileObject;
-    @ManyToOne
-    @JoinColumn(name = "VOD_NO")
-    private VodBoard vodBoard;
+    @Column(name = "VOD_NO")
+    private int vodBoardNo;
     public VodBoardFileDTO EntityToDTO() {
         VodBoardFileDTO vodBoardFileDTO = VodBoardFileDTO.builder()
-                .vodBoardDTO(this.vodBoard.EntityToDTO())
                 .vodFileNo(this.vodFileNo)
                 .vodOriginName(this.vodOriginName)
                 .vodSaveName(this.vodSaveName)
-                .vodFileObject(this.vodFileObject)
+                .vodBoardNo(this.vodBoardNo)
                 .build();
         return vodBoardFileDTO;
     }

@@ -5,6 +5,7 @@ import com.example.finalexamplespring.objectStorage.controller.ObjectStorageCont
 import com.example.finalexamplespring.objectStorage.service.ObjectStorageService;
 import com.example.finalexamplespring.user.entity.CustomUserDetails;
 import com.example.finalexamplespring.vodBoard.dto.VodBoardDTO;
+import com.example.finalexamplespring.vodBoard.dto.VodBoardFileDTO;
 import com.example.finalexamplespring.vodBoard.entity.VodBoard;
 import com.example.finalexamplespring.vodBoard.entity.VodBoardFile;
 import com.example.finalexamplespring.vodBoard.service.VodBoardService;
@@ -13,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -29,7 +27,6 @@ import java.util.*;
 public class VodBoardRestController {
     private final VodBoardService vodBoardService;
     private final ObjectStorageService objectStorageService;
-
 
     @GetMapping("/board-list")
     public ResponseEntity<?> getBoardList(
@@ -56,10 +53,44 @@ public class VodBoardRestController {
         }
     }
 
+    @GetMapping("/board/{boardNo}")
+    public ResponseEntity<?> getBoard(@PathVariable int boardNo) {
+        ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
+
+        try {
+            VodBoard board = vodBoardService.getBoard(boardNo);
+
+            VodBoardDTO returnBoardDTO = board.EntityToDTO();
+
+            List<VodBoardFile> boardFileList = vodBoardService.getBoardFileList(boardNo);
+
+            List<VodBoardFileDTO> boardFileDTOList = new ArrayList<>();
+
+            for (VodBoardFile boardFile : boardFileList) {
+                VodBoardFileDTO boardFileDTO = boardFile.EntityToDTO();
+                boardFileDTOList.add(boardFileDTO);
+            }
+
+            Map<String, Object> returnMap = new HashMap<>();
+
+            returnMap.put("board", returnBoardDTO);
+            returnMap.put("boardFileList", boardFileDTOList);
+
+            responseDTO.setItem(returnMap);
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            responseDTO.setErrorMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> insertBoard(VodBoardDTO boardDTO,
                                          MultipartHttpServletRequest mphsRequest) {
-        System.out.println("되긴하니?");
+        System.out.println("들어오나요?");
         ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 
         List<VodBoardFile> uploadFileList = new ArrayList<>();
@@ -79,16 +110,16 @@ public class VodBoardRestController {
 
                 for (MultipartFile file : fileList) {
                     if (!file.isEmpty()) {
+                        System.out.println("getOriginalFilename: " + file.getOriginalFilename());
                         VodBoardFile boardFile = new VodBoardFile();
                         String saveName = objectStorageService.uploadFile(file);
                         boardFile.setVodOriginName(file.getOriginalFilename());
                         boardFile.setVodSaveName(saveName);
-                        boardFile.setVodBoard(board);
                         uploadFileList.add(boardFile);
                     }
                 }
             }
-
+            System.out.println("hello?");
             vodBoardService.insertBoard(board, uploadFileList);
 
             Map<String, String> returnMap =

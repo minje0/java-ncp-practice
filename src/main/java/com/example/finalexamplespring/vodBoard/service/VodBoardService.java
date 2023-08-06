@@ -19,12 +19,26 @@ public class VodBoardService {
         return vodBoardRepository.findAll();
     }
 
+    public VodBoard getBoard(int boardNo) {
+        if (vodBoardRepository.findById(boardNo).isEmpty()) {
+            return null;
+        }
+        VodBoard returnBoard = vodBoardRepository.findById(boardNo).get();
+        returnBoard.setHits(returnBoard.getHits()+1);
+        vodBoardRepository.save(returnBoard);
+        return returnBoard;
+    }
+
+    public List<VodBoardFile> getBoardFileList(int boardNo) {
+        return vodBoardFileRepository.findAllByVodBoardNo(boardNo);
+    }
+
     public void insertBoard(VodBoard board, List<VodBoardFile> fileList) {
         vodBoardRepository.save(board);
         vodBoardRepository.flush();
 
         for (VodBoardFile boardFile : fileList) {
-            boardFile.setVodBoard(board);
+            boardFile.setVodBoardNo(board.getId());
 
             int boardFilNo = vodBoardFileRepository.save(boardFile).getVodFileNo();
             boardFile.setVodFileNo(boardFilNo);
