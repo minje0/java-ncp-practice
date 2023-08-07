@@ -43,6 +43,9 @@ public class VodBoard {
     @Column(name = "VOD_PATH")
     private String path;
 
+    @Column(name = "VOD_THUMB")
+    private String thumb;
+
     public VodBoardDTO EntityToDTO() {
         VodBoardDTO vodBoardDTO = VodBoardDTO.builder()
                 .id(this.id)

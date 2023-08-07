@@ -4,6 +4,7 @@ import com.example.finalexamplespring.dto.ResponseDTO;
 import com.example.finalexamplespring.liveStation.dto.*;
 import com.example.finalexamplespring.liveStation.responseDto.LiveInfoDTO;
 import com.example.finalexamplespring.liveStation.responseDto.LiveUrlDTO;
+import com.example.finalexamplespring.liveStation.responseDto.RecordVodDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -128,6 +129,8 @@ public class LiveStationService {
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<LiveStationResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.GET, httpEntity, LiveStationResponseDTO.class);
 
+            System.out.println(response);
+
             //보내줄 데이터 가공
             LiveInfoDTO dto = LiveInfoDTO.builder()
                     .channelId(channelID)
@@ -148,7 +151,6 @@ public class LiveStationService {
 
             return ResponseEntity.badRequest().body(responseDTO);
         }
-
     }
 
     public ResponseEntity<?> getServiceURL(String channelID) {
@@ -158,7 +160,8 @@ public class LiveStationService {
             urlBuilder.append(liveStationUrl);
             urlBuilder.append("/");
             urlBuilder.append(channelID);
-            urlBuilder.append("/serviceUrls?serviceUrlType=GENERAL");
+            urlBuilder.append("/serviceUrls?serviceUrlType=");
+            urlBuilder.append("GENERAL");
             String url = urlBuilder.toString();
 
             String signUrl = url.substring(url.indexOf(".com") + 4);
@@ -180,7 +183,7 @@ public class LiveStationService {
             RestTemplate restTemplate = new RestTemplate();
 
             ResponseEntity<ServiceUrlDTO> response = restTemplate.exchange(new URI(url), HttpMethod.GET, httpEntity, ServiceUrlDTO.class);
-
+            System.out.println(response);
             //보내줄 데이터 가공
 
             List<LiveUrlDTO> dtoList = new ArrayList<>();
@@ -250,6 +253,68 @@ public class LiveStationService {
             responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
 
             return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    public ResponseEntity<?> getRecord(String channelID) {
+        ResponseDTO<RecordVodDTO> responseDTO = new ResponseDTO<>();
+        try {
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.append(liveStationUrl);
+            urlBuilder.append("/");
+            urlBuilder.append(channelID);
+            urlBuilder.append("/records");
+//            urlBuilder.append("/");
+//            urlBuilder.append(recordID);
+            String url = urlBuilder.toString();
+
+            String signUrl = url.substring(url.indexOf(".com") + 4);
+
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String method = "GET";
+            String sig = makeSignature(timestamp, method, signUrl);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-ncp-apigw-timestamp", timestamp);
+            headers.set("x-ncp-iam-access-key", accessKey);
+            headers.set("x-ncp-apigw-signature-v2", sig);
+            headers.set("x-ncp-region_code", "KR");
+
+            HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<RecordResponseDTO> response = restTemplate.exchange(new URI(url), HttpMethod.GET, httpEntity, RecordResponseDTO.class);
+            RecordVodDTO dto = null;
+            System.out.println(response.getBody().getContentDTO().getRecordList());
+            for(String key : response.getBody().getContentDTO().getRecordList().keySet()){
+                RecordInfoDTO recordInfoDTO = response.getBody().getContentDTO().getRecordList().get(key);
+                if (recordInfoDTO.getRecordType().equals("MP4")) {
+                    dto = RecordVodDTO.builder()
+                            .channelId(recordInfoDTO.getChannelId())
+                            .fileName(recordInfoDTO.getFileName())
+                            .uploadPath(recordInfoDTO.getUploadPath())
+                            .recordType(recordInfoDTO.getRecordType())
+                            .build();
+                }
+            }
+
+            System.out.println(dto.toString());
+//            RecordVodDTO dto = RecordVodDTO.builder()
+//                    .
+//                    .build();
+
+
+            responseDTO.setStatusCode(HttpStatus.OK.value());
+//            responseDTO.setItem(dto);
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            responseDTO.setErrorMessage(e.getMessage());
+            responseDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+            return ResponseEntity.badRequest().body(responseDTO);
+
         }
     }
 

@@ -90,7 +90,6 @@ public class VodBoardRestController {
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> insertBoard(VodBoardDTO boardDTO,
                                          MultipartHttpServletRequest mphsRequest) {
-        System.out.println("들어오나요?");
         ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 
         List<VodBoardFile> uploadFileList = new ArrayList<>();

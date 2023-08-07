@@ -26,7 +26,7 @@ public class LiveStationRestController {
             notes = "채널 아이디를 통해 채널 정보를 확인한다."
     )
     @GetMapping("/info/{channelId}")
-    public ResponseEntity<?> infoChannel(@PathVariable String channelId) {
+    public ResponseEntity<?> getChannelInfo(@PathVariable String channelId) {
         return liveStationService.getChannelInfo(channelId);
     }
 
@@ -35,7 +35,7 @@ public class LiveStationRestController {
             notes = "채널 아이디를 통해 url 정보를 확인한다."
     )
     @GetMapping("/infoUrl/{channelId}")
-    public ResponseEntity<?> infoServiceUrl(@PathVariable String channelId) {
+    public ResponseEntity<?> getServiceURL(@PathVariable String channelId) {
         return liveStationService.getServiceURL(channelId);
     }
 
@@ -44,4 +44,8 @@ public class LiveStationRestController {
         return liveStationService.deleteChannel(channelId);
     }
 
+    @GetMapping("/record/{channelId}")
+    public ResponseEntity<?> getRecord(@PathVariable(name = "channelId") String channelId) {
+        return liveStationService.getRecord(channelId);
+    }
 }
