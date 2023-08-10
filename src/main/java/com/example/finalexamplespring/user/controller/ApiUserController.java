@@ -3,6 +3,7 @@ package com.example.finalexamplespring.user.controller;
 import com.example.finalexamplespring.dto.ResponseDTO;
 import com.example.finalexamplespring.jwt.JwtTokenProvider;
 import com.example.finalexamplespring.ncloudChatApi.service.ChatApiService;
+import com.example.finalexamplespring.user.dto.JoinDTO;
 import com.example.finalexamplespring.user.dto.UserDTO;
 import com.example.finalexamplespring.user.entity.User;
 import com.example.finalexamplespring.user.service.UserService;
@@ -22,22 +23,41 @@ public class ApiUserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody UserDTO userDTO) {
-        ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>();
-        System.out.println(userDTO);
+    public ResponseEntity<?> join(@RequestBody JoinDTO joinDTO) {
+        System.out.println("hello");
+        System.out.println(joinDTO);
+        ResponseDTO<JoinDTO> responseDTO = new ResponseDTO<>();
+
+        UserDTO studentDTO = joinDTO.getStudentDTO();
+        UserDTO parentDTO = joinDTO.getParentDTO();
+
         try {
-            User user = userDTO.DTOToEntity();
+            User student = studentDTO.DTOToEntity();
+            User parent = parentDTO.DTOToEntity();
 
-            user.setPassword(
-                    passwordEncoder.encode(user.getPassword())
-            );
-            user.setRole("ROLE_USER");
+            String pwd = student.getBirth().toLowerCase();
 
-            User joinUser = userService.join(user);
-            chatService.join(user);
-            joinUser.setPassword("");
+            student.setPassword(passwordEncoder.encode(pwd));
+            parent.setPassword(passwordEncoder.encode(pwd));
 
-            UserDTO joinUserDTO = joinUser.EntityToDTO();
+            student.setRole("ROLE_USER");
+            parent.setRole("ROLE_USER");
+
+            User studentUser = userService.join(student);
+
+            parent.setJoinId(studentUser.getId());
+            User parentUser = userService.join(parent);
+
+            chatService.join(studentUser);
+            chatService.join(parentUser);
+
+            studentUser.setPassword("");
+            parentUser.setPassword("");
+
+            JoinDTO joinUserDTO = JoinDTO.builder()
+                    .studentDTO(studentUser.EntityToDTO())
+                    .parentDTO(parentUser.EntityToDTO())
+                    .build();
 
             responseDTO.setItem(joinUserDTO);
             responseDTO.setStatusCode(HttpStatus.OK.value());
@@ -50,6 +70,7 @@ public class ApiUserController {
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
