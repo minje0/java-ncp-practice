@@ -1,0 +1,99 @@
+
+.joinDiv {
+    background: #ECECEC;
+    display: flex;
+    justify-content: center;
+}
+
+.joinTitle {
+    padding-top: 50px;
+    margin-left: 50px;
+    margin-right: 100px;
+}
+
+.joinForm {
+    display: flex;
+}
+
+.joinContent1, .joinContent2 {
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.joinContent1 > input, .addressInput {
+    margin: 8px 85px 25px 0px;
+    background-color: white;
+    width: 320px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    font-size: large;
+}
+
+.counsel {
+    margin: 10px 0px 20px 0px;
+    background-color: white;
+    width: 420px;
+    height: 230px;
+    border-radius: 10px;
+    border: none;
+    resize: none;
+}
+
+.significant{
+    margin: 10px 0px 25px 0px;
+    background-color: white;
+    width: 420px;
+    height: 133px;
+    border-radius: 10px;
+    border: none;
+    resize: none;
+}
+
+.joinContent2 > input {
+    margin: 8px 80px 25px 0px;
+    background-color: white;
+    width: 420px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    font-size: large;
+}
+
+.joinBtns {
+    width: 420px;
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 30px;
+
+}
+
+.joinBtns > button {
+  background-color: #171A2B;
+  color: white;
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  font-size: medium;
+  cursor: pointer;
+}
+
+.addressInput{
+    margin-right: 0;
+}
+
+.addressBtn {
+    margin-left: 10px;
+    border: none;
+    background-color: #171A2B;
+    font-size: medium;
+    color: white;
+    border-radius: 10px;
+    height: 43px;
+    cursor: pointer;
+}
+
+
+  
